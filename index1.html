@@ -90,38 +90,44 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@2.0.0/dist/tf.min.js"></script>
 
-    <script>
+   <script type="text/javascript">
+    let modelo = null;
 
-        var modelo = null;
-        //Cargamos el modelo entrenado
-        (async() =>{
-            console.log("Cargando el modelo...");
-            modelo = await tf.loadLayersModel("model.json");
-            console.log("Modelo cargado!");
-        })();
+    (async () => {
+      console.log("Cargando modelo...");
+      modelo = await tf.loadLayersModel('model.json'); 
+      console.log("Modelo cargado.");
+    })();
 
-        const btn = document.getElementById("btn");
+    async function predictPrice() {
+      if (!modelo) {
+        alert("El modelo aún no se ha cargado. Por favor, espera.");
+        return;
+      }
 
-        btn.onclick = () =>{
-            var m2 = document.getElementById('m2').value;
-            var hab = document.getElementById('hab').value;
-            var planta = document.getElementById('planta').value;
-            var ascensor = document.getElementById('ascensor').value;
-            var ext = document.getElementById('ext').value;
-            var est = document.getElementById('est').value;
-            var cent = document.getElementById('cent').value;
+      const inputArea = parseFloat(document.getElementById("inputArea").value);
+      const inputRooms = parseFloat(document.getElementById("inputRooms").value);
+      const inputFloor = parseFloat(document.getElementById("inputFloor").value);
+      const inputElevator = parseFloat(document.getElementById("inputElevator").value);
+      const inputExterior = parseFloat(document.getElementById("inputExterior").value);
+      const inputState = parseFloat(document.getElementById("inputState").value);
+      const inputCentric = parseFloat(document.getElementById("inputCentric").value);
 
-            if(modelo != null){
-                var tensor = tf.tensor2d([[0, parseInt(m2), parseInt(hab), parseInt(planta), parseInt(ascensor), parseInt(ext), parseInt(est), parseInt(cent)]])
-                var prediccion = modelo.predict(tensor).dataSync();
-                prediccion = Math.round(prediccion, 2)
-                document.getElementById("resultado").innerHTML = "Precio: " + prediccion + "S/mes";
-            }else{
-                document.getElementById("resultado").innerHTML = "Intenta de nuevo en un rato...";
-            }
-        }
+      if ([inputArea, inputRooms, inputFloor, inputElevator, inputExterior, inputState, inputCentric].some(isNaN)) {
+        alert("Por favor, completa todos los campos correctamente.");
+        return;
+      }
 
-    </script>
+      const tensorInput = tf.tensor2d([[0, inputArea, inputRooms, inputFloor, inputElevator, inputExterior, inputState, inputCentric]]);
+      const prediction = await modelo.predict(tensorInput).data();
+      const predictedPrice = prediction[0].toFixed(2);
+
+      document.getElementById("result").innerText = `El precio estimado es: S/ ${predictedPrice}`;
+      
+      tensorInput.dispose();
+    }
+  </script>
+   
     
 </body>
 </html>
