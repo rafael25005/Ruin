@@ -93,13 +93,13 @@
 
     <script>
 
-        var modelo = null;
-        //Cargamos el modelo entrenado
-        (async() =>{
-            console.log("Cargando el modelo...");
-            modelo = await tf.loadLayersModel("model.json");
-            console.log("Modelo cargado!");
-        })();
+       var modelo = null;
+(async () => {
+    console.log("Cargando el modelo...");
+    modelo = await tf.loadLayersModel("model.json");
+    console.log("Modelo cargado!");
+})();
+
 
         const btn = document.getElementById("btn");
 
